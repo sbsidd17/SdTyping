@@ -1,10 +1,11 @@
 import React from 'react'
 import SelectParagraph from '../components/SelectParagraph'
+import { hindiTypingData } from '../utility/hindiTypingData'
 
 function Hindi() {
   return (
     <div>
-      Hindi
+      <SelectParagraph typingData={hindiTypingData} />
     </div>
   )
 }

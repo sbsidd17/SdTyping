@@ -17,6 +17,7 @@ function TypingTest() {
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [wordsArray, setWordsArray] = useState([]);
   const [isHighlightOn, setIsHighlightOn] = useState(true);
+  const [scrTo, setScrTo] = useState(0);
   const hasFocused = useRef(false);
   const submitButtonRef = useRef(null);
   useEffect(() => {
@@ -38,6 +39,11 @@ function TypingTest() {
     if (event.keyCode === 32) {
       const currentWord = typedText.trim().split(" ").length;
       setCurrentIndex(currentWord);
+      let highlightedWordPosition  = document.querySelector('.highlighted').offsetTop;
+      let paraDivPosition =  document.querySelector('.para-div').offsetTop;
+      setScrTo(highlightedWordPosition - paraDivPosition)
+      document.querySelector('.para-div').scroll(0,scrTo)
+
   }
 }
 
@@ -71,9 +77,7 @@ function TypingTest() {
     );
     
   };
-  
-
-  
+   
   const handleFocus = () => {
     if (!hasFocused.current) {
       hasFocused.current = true;
@@ -100,7 +104,7 @@ function TypingTest() {
             </div>
           </div>
           {/* Typing Text Div */}
-          <div className="flex w-[96%] h-[230px] border border-black rounded-md mx-[2%] mt-[10px] bg-white overflow-y-scroll whitespace-pre-wrap">
+          <div className="para-div flex w-[96%] h-[230px] border border-black rounded-md mx-[2%] mt-[10px] bg-white overflow-y-scroll whitespace-pre-wrap">
           {getHighlightedWords()}
           </div>
           {/* Typing TextBox */}
