@@ -1,3 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
+
 import React from "react";
 import { useState, useRef, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
