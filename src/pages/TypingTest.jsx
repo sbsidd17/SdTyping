@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-
 import React from "react";
 import { useState, useRef, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
-import '../App.css'
+import "../App.css";
+import { getHighlightedWords, getWordsArray } from "../utility/helperFunctions";
 import { stopTimer, timeCheck, timeTake } from "../utility/timer";
 
 function TypingTest() {
@@ -13,80 +13,68 @@ function TypingTest() {
   const time = location.state.time;
   const [minutes, setMinutes] = useState(time / 60);
   const [seconds, setSeconds] = useState("00");
-  const [takenTime, setTakenTime] = useState(0)
+  const [takenTime, setTakenTime] = useState(0);
   const [intervalId, setIntervalId] = useState(null);
-  const [typedText, setTypedText] = useState('');
-  const [backSpace, setBackSpace] = useState(0)
+  const [typedText, setTypedText] = useState("");
+  const [backSpace, setBackSpace] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [wordsArray, setWordsArray] = useState([]);
   const [isHighlightOn, setIsHighlightOn] = useState(true);
   const [scrTo, setScrTo] = useState(0);
   const hasFocused = useRef(false);
   const submitButtonRef = useRef(null);
+
+  useEffect(() => {
+    getWordsArray(paragraph, setWordsArray);
+  }, []);
+
   useEffect(() => {
     if (takenTime === Number(time) && submitButtonRef.current) {
       submitButtonRef.current.click();
-      stopTimer(intervalId)
+      stopTimer(intervalId);
       // console.log('timer stopped');
     }
   }, [takenTime]);
 
-  const handleChange = (event)=>{
-      setTypedText(event.target.value)
-  }
+  useEffect(() => {
+    if (
+      typedText.split(" ").length === paragraph.split(" ").length + 1 &&
+      submitButtonRef.current
+    ) {
+      submitButtonRef.current.click();
+      stopTimer(intervalId);
+    }
+  }, [typedText]);
+
+  const handleChange = (event) => {
+    setTypedText(event.target.value);
+  };
 
   function handleKeyDown(event) {
     if (event.keyCode === 8) {
-      setBackSpace(pre => pre + 1)
+      setBackSpace((pre) => pre + 1);
     }
     if (event.keyCode === 32) {
       const currentWord = typedText.trim().split(" ").length;
       setCurrentIndex(currentWord);
-      let highlightedWordPosition  = document.querySelector('.highlighted').offsetTop;
-      let paraDivPosition =  document.querySelector('.para-div').offsetTop;
-      setScrTo(highlightedWordPosition - paraDivPosition)
-      document.querySelector('.para-div').scroll(0,scrTo)
-
-  }
-}
-
-  const getWordsArray = () => {
-    const wordsArray = paragraph.trim().split(" ")
-    setWordsArray(wordsArray);
-  };
-
-  useEffect(()=>{
-    getWordsArray()
-  }, [])
-
-  const toggleHighlight = () => {
-    setIsHighlightOn(!isHighlightOn);
+      let highlightedWordPosition =
+        document.querySelector(".highlighted").offsetTop;
+      let paraDivPosition = document.querySelector(".para-div").offsetTop;
+      setScrTo(highlightedWordPosition - paraDivPosition);
+      document.querySelector(".para-div").scroll(0, scrTo);
+    }
   }
 
-  const getHighlightedWords = () => {
-    return (
-      <div className="flex flex-wrap w-[96%] mx-[2%] my-[10px]">
-        {wordsArray.map((word, index) => {
-          const isHighlighted = index === currentIndex && isHighlightOn;
-          const className = isHighlighted ? "highlighted" : "";
-          return (
-            <span key={index} className={className}>
-              {word}
-              {index !== wordsArray.length - 1 && " "}
-            </span>
-          );
-        })}
-      </div>
-    );
-    
-  };
-   
   const handleFocus = () => {
     if (!hasFocused.current) {
       hasFocused.current = true;
       timeCheck(time, setMinutes, setSeconds);
-      timeTake(setTakenTime, setIntervalId)
+      timeTake(setTakenTime, setIntervalId);
     }
+  };
+
+  const toggleHighlight = () => {
+    setIsHighlightOn(!isHighlightOn);
   };
 
   return (
@@ -107,29 +95,37 @@ function TypingTest() {
             </div>
           </div>
           {/* Typing Text Div */}
-          <div className="para-div flex w-[96%] h-[230px] border border-black rounded-md mx-[2%] mt-[10px] bg-white overflow-y-scroll whitespace-pre-wrap">
-          {getHighlightedWords()}
+          <div className="para-div flex w-[96%] h-[230px] border border-black rounded-md mx-[2%] mt-[10px] bg-white overflow-y-scroll whitespace-pre-wrap select-none">
+            {getHighlightedWords(wordsArray, currentIndex, isHighlightOn)}
           </div>
           {/* Typing TextBox */}
           <textarea
             className="flex w-[96%] h-[200px] border border-black rounded-md mx-[2%] my-[10px]"
-            value={typedText} 
+            value={typedText}
             onFocus={handleFocus}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
           ></textarea>
           {/* Submit Button */}
-          <Link to={"/result"} state={{ takenTime, typedText, paragraph, backSpace }}>
-          <button type="submit" ref={submitButtonRef} onClick={stopTimer} className="rounded-full bg-slate-500 ml-[30px] py-2 text-white w-[200px] hover:bg-slate-700 mb-[20px]">
+          <Link
+            to={"/result"}
+            state={{ takenTime, typedText, paragraph, backSpace }}
+          >
+            <button
+              type="submit"
+              ref={submitButtonRef}
+              onClick={stopTimer}
+              className="rounded-full bg-slate-500 ml-[30px] py-2 text-white w-[200px] hover:bg-slate-700 mb-[20px]"
+            >
               Submit Test
             </button>
           </Link>
         </div>
         {/* Right Div */}
         <div className="flex flex-col w-[25%] my-5 mx-2 bg-slate-100 rounded-md">
-        <button onClick={toggleHighlight}>
-        {isHighlightOn ? "Highlight off" : "Highlight on"}
-      </button>
+          <button onClick={toggleHighlight}>
+            {isHighlightOn ? "Highlight off" : "Highlight on"}
+          </button>
         </div>
       </div>
     </div>

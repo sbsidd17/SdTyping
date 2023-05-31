@@ -2,20 +2,29 @@ import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import {FaBars, FaMarker} from "react-icons/fa"
 import { Link } from 'react-router-dom'
+import toast from 'react-hot-toast'
 
-const navigation = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/about' },
-  { name: 'Contact Us', href: '/contact' },
-  { name: 'Hindi Typing', href: '/hindi' },
-  { name: 'English Typing', href: '/english' },
-]
+
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function Navbar() {
+export default function Navbar({isLoggedIn, setIsLoggedIn}) {
+  const navigation = [
+    { name: 'Home', href: '/' },
+    { name: 'About', href: '/about' },
+    { name: 'Contact Us', href: '/contact' },
+    { name: 'Hindi Typing', href: '/hindi' },
+    { name: 'English Typing', href: '/english' },
+    { name: isLoggedIn === true ? ("LogOut") : ("Login"), href: isLoggedIn === true ? ("/") : ("/login") },
+    { name: isLoggedIn === true ? ("Dashboard") : ("SignUp"), href: isLoggedIn === true ? ("/dashboard") : ("/signup") },
+  ]
+
+  function signoutHandler(){
+    setIsLoggedIn(false)
+    toast.success("Logged Out Successfully")
+  }
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -54,6 +63,7 @@ export default function Navbar() {
                         to={item.href}
                         className='text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium'
                         aria-current={item.current ? 'page' : undefined}
+                        onClick={item.name==="LogOut" ? signoutHandler : ''}
                       >
                         {item.name}
                       </Link>
@@ -88,36 +98,57 @@ export default function Navbar() {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <Menu.Item>
+                      {isLoggedIn && <Menu.Item>
                         {({ active }) => (
-                          <a
-                            href="/"
+                          <Link
+                            to="/profile"
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
                             Your Profile
-                          </a>
+                          </Link>
                         )}
-                      </Menu.Item>
-                      <Menu.Item>
+                      </Menu.Item>}
+                      {isLoggedIn && <Menu.Item>
                         {({ active }) => (
-                          <a
-                            href="/"
+                          <Link
+                            to="/dashboard"
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
-                            Settings
-                          </a>
+                            Dashboard
+                          </Link>
                         )}
-                      </Menu.Item>
-                      <Menu.Item>
+                      </Menu.Item>}
+                      {isLoggedIn && <Menu.Item>
                         {({ active }) => (
-                          <a
-                            href="/"
+                          <Link
+                            to="/"
+                            onClick={signoutHandler}
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
                             Sign out
-                          </a>
+                          </Link>
                         )}
-                      </Menu.Item>
+                      </Menu.Item>}
+                      {!isLoggedIn && <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            to="/login"
+                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                          >
+                            Login
+                          </Link>
+                        )}
+                      </Menu.Item>}
+                      {!isLoggedIn && <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            to="/signup"
+                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                          >
+                            SignUp
+                          </Link>
+                        )}
+                      </Menu.Item>}
                     </Menu.Items>
                   </Transition>
                 </Menu>

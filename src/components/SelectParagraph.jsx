@@ -15,6 +15,7 @@ function SelectParagraphTime({ typingData }) {
   };
 
   return (
+    <>
     <div>
       <h1>Select Paragraph and Time</h1>
       <label htmlFor="paragraph">Select Paragraph:</label>
@@ -44,6 +45,8 @@ function SelectParagraphTime({ typingData }) {
         </Link>
       )}
     </div>
+    
+    </>
   );
 }
 
